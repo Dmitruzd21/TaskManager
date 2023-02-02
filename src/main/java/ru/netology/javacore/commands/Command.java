@@ -1,4 +1,4 @@
-package ru.netology.javacore.commandAndMomentoPatterns;
+package ru.netology.javacore.commands;
 
 public interface Command {
 

@@ -34,7 +34,7 @@ public class TodosTests {
 
     @BeforeEach
     public void createTodos() {
-        todos = new Todos();
+        todos = Todos.getInstance();
     }
 
     @Test

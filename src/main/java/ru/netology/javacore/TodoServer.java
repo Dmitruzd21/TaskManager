@@ -2,9 +2,9 @@ package ru.netology.javacore;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ru.netology.javacore.commandAndMomentoPatterns.AddTaskCommand;
-import ru.netology.javacore.commandAndMomentoPatterns.Command;
-import ru.netology.javacore.commandAndMomentoPatterns.RemoveTaskCommand;
+import ru.netology.javacore.commands.AddTaskCommand;
+import ru.netology.javacore.commands.Command;
+import ru.netology.javacore.commands.RemoveTaskCommand;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -17,6 +17,7 @@ public class TodoServer {
     private final String addOperation = "ADD";
     private final String removeOperation = "REMOVE";
     private final String restore = "RESTORE";
+    private Stack<Command> commandStack = new Stack<>();
 
     public TodoServer(int port, Todos todos) {
         this.port = port;
@@ -50,22 +51,26 @@ public class TodoServer {
         return gson.fromJson(jsonText, Task.class);
     }
 
-    Stack<Command> commandStack = new Stack<>();
-
     public void performOperationWithTask(Task task) {
-        if (task.getType().equals(addOperation)) {
-            Command addTaskCommand = new AddTaskCommand(todos);
-            addTaskCommand.execute(task.getTask());
-            commandStack.push(addTaskCommand);
-        } else if (task.getType().equals(removeOperation)) {
-            Command removeTaskCommand = new RemoveTaskCommand(todos);
-            removeTaskCommand.execute(task.getTask());
-            commandStack.push(removeTaskCommand);
-        } else if (task.getType().equals(restore)) {
-            Command command = commandStack.pop();
-            command.unExecute();
-        } else {
-            System.out.println("Сервер не может распознать операцию!");
+        switch (task.getType()) {
+            case addOperation:
+                Command addTaskCommand = new AddTaskCommand();
+                addTaskCommand.execute(task.getTask());
+                commandStack.push(addTaskCommand);
+                break;
+            case removeOperation:
+                Command removeTaskCommand = new RemoveTaskCommand();
+                removeTaskCommand.execute(task.getTask());
+                commandStack.push(removeTaskCommand);
+                break;
+            case restore:
+               // commandStack.forEach((x) -> System.out.println("Hash объекта команды: " + x.hashCode()));
+                Command command = commandStack.pop();
+                command.unExecute();
+                break;
+            default:
+                System.out.println("Сервер не может распознать операцию!");
+                break;
         }
     }
 }
