@@ -3,18 +3,22 @@ import ru.netology.javacore.Todos;
 
 public class RemoveTaskCommand implements Command {
 
-    private StateOfTodos stateOfTodos;
+    private Todos todos;
+    private String task;
 
-    @Override
-    public void execute(String task) {
-        this.stateOfTodos = new StateOfTodos();
-        stateOfTodos.setState();
-        Todos.getInstance().removeTask(task);
+    public RemoveTaskCommand(Todos todos) {
+        this.todos = todos;
     }
 
     @Override
-    public void unExecute() {
-        Todos.getInstance().setTasks(stateOfTodos.getState());
+    public void execute(String task) {
+        this.task = task;
+        todos.removeTask(task);
+    }
+
+    @Override
+    public String getTask() {
+        return task;
     }
 }
 

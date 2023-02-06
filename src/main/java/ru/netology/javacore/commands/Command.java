@@ -4,5 +4,5 @@ public interface Command {
 
     void execute(String task);
 
-    void unExecute();
+    String getTask();
 }

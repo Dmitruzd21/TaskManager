@@ -2,17 +2,21 @@ package ru.netology.javacore.commands;
 import ru.netology.javacore.Todos;
 
 public class AddTaskCommand implements Command {
-    private StateOfTodos stateOfTodos;
+    private Todos todos;
+    private String task;
 
-    @Override
-    public void execute(String task) {
-        stateOfTodos = new StateOfTodos();
-        stateOfTodos.setState();
-        Todos.getInstance().addTask(task);
+    public AddTaskCommand(Todos todos) {
+        this.todos = todos;
     }
 
     @Override
-    public void unExecute() {
-        stateOfTodos.getState();
+    public void execute(String task) {
+        this.task = task;
+        todos.addTask(task);
+    }
+
+    @Override
+    public String getTask() {
+        return task;
     }
 }

@@ -10,13 +10,14 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Stack;
+import java.util.TreeSet;
 
 public class TodoServer {
     private int port;
     private Todos todos;
-    private final String addOperation = "ADD";
-    private final String removeOperation = "REMOVE";
-    private final String restore = "RESTORE";
+    private final String ADD_OPERATION = "ADD";
+    private final String REMOVE_OPERATION = "REMOVE";
+    private final String RESTORE_OPERATION = "RESTORE";
     private Stack<Command> commandStack = new Stack<>();
 
     public TodoServer(int port, Todos todos) {
@@ -53,20 +54,33 @@ public class TodoServer {
 
     public void performOperationWithTask(Task task) {
         switch (task.getType()) {
-            case addOperation:
-                Command addTaskCommand = new AddTaskCommand();
+            case ADD_OPERATION:
+                Command addTaskCommand = new AddTaskCommand(todos);
                 addTaskCommand.execute(task.getTask());
                 commandStack.push(addTaskCommand);
                 break;
-            case removeOperation:
-                Command removeTaskCommand = new RemoveTaskCommand();
+            case REMOVE_OPERATION:
+                Command removeTaskCommand = new RemoveTaskCommand(todos);
                 removeTaskCommand.execute(task.getTask());
                 commandStack.push(removeTaskCommand);
                 break;
-            case restore:
-               // commandStack.forEach((x) -> System.out.println("Hash объекта команды: " + x.hashCode()));
-                Command command = commandStack.pop();
-                command.unExecute();
+            case RESTORE_OPERATION:
+                try {
+                    commandStack.pop();
+                    TreeSet<String> previousTasks = new TreeSet<>();
+                    for (Command command : commandStack) {
+                        if (command.getClass() == AddTaskCommand.class)
+                            previousTasks.add(command.getTask());
+                    }
+                    for (Command command : commandStack) {
+                        if (command.getClass() == RemoveTaskCommand.class)
+                            previousTasks.remove(command.getTask());
+                    }
+                    System.out.println(previousTasks);
+                    todos.setTasks(previousTasks);
+                } catch (Exception ex) {
+                    System.out.println("Отмена невозможна!");
+                }
                 break;
             default:
                 System.out.println("Сервер не может распознать операцию!");

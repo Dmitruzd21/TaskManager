@@ -4,6 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class TodosTests {
     private Todos todos;
     private String swimming = "Плавание";
@@ -21,7 +25,7 @@ public class TodosTests {
             .append(swimming).append(" ")
             .append(running).append(" ")
             .append(cleaning).append(" ")
-            .append(reading).append(" ")
+            .append(reading)
             .toString();
     private String tasksInAlphabetOrderWithoutCleaning = new StringBuilder()
             .append(acrobatics).append(" ")
@@ -29,12 +33,12 @@ public class TodosTests {
             .append(singing).append(" ")
             .append(swimming).append(" ")
             .append(running).append(" ")
-            .append(reading).append(" ")
+            .append(reading)
             .toString();
 
     @BeforeEach
     public void createTodos() {
-        todos = Todos.getInstance();
+        todos = new Todos();
     }
 
     @Test
