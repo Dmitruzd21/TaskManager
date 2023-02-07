@@ -14,11 +14,11 @@ public class Client {
         try (Socket socket = new Socket(ip, port);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-           //  out.println("{\"type\": \"ADD\", \"task\": \"Лыжи\"}");
+             out.println("{\"type\": \"ADD\", \"task\": \"Лыжи\"}");
            // out.println("{\"type\": \"ADD\", \"task\": \"Акробатика\"}");
            // out.println("{\"type\": \"ADD\", \"task\": \"Чтение\"}");
-            out.println("{\"type\": \"REMOVE\", \"task\": \"Лыжи\"}");
-           //  out.println("{\"type\": \"RESTORE\"}");
+           // out.println("{\"type\": \"REMOVE\", \"task\": \"Лыжи\"}");
+           // out.println("{\"type\": \"RESTORE\"}");
             System.out.println(in.readLine());
         } catch (IOException e) {
             e.printStackTrace();

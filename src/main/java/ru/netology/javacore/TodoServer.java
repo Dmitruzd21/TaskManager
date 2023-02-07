@@ -9,6 +9,8 @@ import ru.netology.javacore.commands.RemoveTaskCommand;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.TreeSet;
 
@@ -35,8 +37,12 @@ public class TodoServer {
                     System.out.println("New connection accepted");
                     String clientRequest = in.readLine();
                     Task task = convertJsonToTask(clientRequest);
-                    System.out.println(task.getType());
-                    performOperationWithTask(task);
+                    try {
+                        performOperationWithTask(task);
+                    } catch (IllegalStateException ex) {
+                        out.println(ex.getMessage());
+                    }
+
                     out.println(todos.getAllTasks());
                 }
             }
@@ -52,7 +58,7 @@ public class TodoServer {
         return gson.fromJson(jsonText, Task.class);
     }
 
-    public void performOperationWithTask(Task task) {
+    public void performOperationWithTask(Task task) throws IllegalStateException {
         switch (task.getType()) {
             case ADD_OPERATION:
                 Command addTaskCommand = new AddTaskCommand(todos);
@@ -65,22 +71,21 @@ public class TodoServer {
                 commandStack.push(removeTaskCommand);
                 break;
             case RESTORE_OPERATION:
-                try {
-                    commandStack.pop();
-                    TreeSet<String> previousTasks = new TreeSet<>();
-                    for (Command command : commandStack) {
-                        if (command.getClass() == AddTaskCommand.class)
-                            previousTasks.add(command.getTask());
-                    }
-                    for (Command command : commandStack) {
-                        if (command.getClass() == RemoveTaskCommand.class)
-                            previousTasks.remove(command.getTask());
-                    }
-                    System.out.println(previousTasks);
-                    todos.setTasks(previousTasks);
-                } catch (Exception ex) {
-                    System.out.println("Отмена невозможна!");
+                if (commandStack.size() <= 1 || commandStack.isEmpty() ) {
+                    throw new IllegalStateException("Нет предыдущих команд для отмены!");
                 }
+                commandStack.pop();
+                List<String> previousTasks = new ArrayList<>();
+                for (Command command : commandStack) {
+                    if (command.getClass() == AddTaskCommand.class)
+                        previousTasks.add(command.getTask());
+                }
+                for (Command command : commandStack) {
+                    if (command.getClass() == RemoveTaskCommand.class)
+                        previousTasks.remove(command.getTask());
+                }
+                TreeSet<String> tasksSet = new TreeSet<>(previousTasks);
+                todos.setTasks(tasksSet);
                 break;
             default:
                 System.out.println("Сервер не может распознать операцию!");

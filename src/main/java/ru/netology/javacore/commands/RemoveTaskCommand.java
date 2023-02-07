@@ -11,7 +11,7 @@ public class RemoveTaskCommand implements Command {
     }
 
     @Override
-    public void execute(String task) {
+    public void execute(String task) throws IllegalStateException {
         this.task = task;
         todos.removeTask(task);
     }

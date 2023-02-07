@@ -11,9 +11,13 @@ public class Todos {
         if (tasks.size() < MAX_TASKS) {
             tasks.add(task);
         }
+
     }
 
-    public void removeTask(String task) {
+    public void removeTask(String task) throws IllegalStateException  {
+        if (tasks.isEmpty()) {
+            throw new IllegalStateException("Список задач пустой: операция удаления невозможна");
+        }
         tasks.remove(task);
     }
 
@@ -24,5 +28,9 @@ public class Todos {
 
     public void setTasks(TreeSet<String> tasks) {
         this.tasks = tasks;
+    }
+
+    public TreeSet<String> getTasks() {
+        return tasks;
     }
 }
